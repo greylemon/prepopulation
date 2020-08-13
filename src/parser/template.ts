@@ -1,6 +1,6 @@
 import { IExcelState, IRows } from 'redux-spreadsheet/src/@types/state';
-import { IRowToCategoryMap, ICategory, IColumnToAttributeMap, IDataElements, IWorkbookCategoryMap, IWorkbookAttributeMap } from "../@types";
-import { createJSONParams } from "../utils";
+import { IRowToCategoryMap, ICategory, IColumnToAttributeMap, IDataElements, IWorkbookCategoryMap, IWorkbookAttributeMap, ISubmissionParam, IMasterValue } from "../@types";
+import { createOrderedJSONParams } from "../utils";
 
 const extractCategories = (
   rows: IRows,
@@ -8,7 +8,7 @@ const extractCategories = (
   categoryColumn: number
 ) => {
   const categoryData: IRowToCategoryMap = {};
-  const groups: Set<string> = new Set();
+  const categoryGroups: Set<string> = new Set();
   const categories: Set<string> = new Set();
 
   for (let rowIndex in rows) {
@@ -19,9 +19,9 @@ const extractCategories = (
     const categoryCell = row[categoryColumn];
 
     if (groupCell && groupCell.value) {
-      const group = groupCell.value as string;
-      data.group = group;
-      groups.add(group);
+      const categoryGroup = groupCell.value as string;
+      data.categoryGroup = categoryGroup;
+      categoryGroups.add(categoryGroup);
     }
 
     if (categoryCell && categoryCell.value) {
@@ -30,11 +30,11 @@ const extractCategories = (
       categories.add(category);
     }
 
-    if (data.category || data.group)
+    if (data.category || data.categoryGroup)
       categoryData[rowIndex] = data;
   }
 
-  return { categoryData, groups, categories };
+  return { categoryData, categoryGroups, categories };
 };
 
 const extractAttributes = (
@@ -105,7 +105,7 @@ export const extractDataElements = (
     );
 
     sheetCategories.categories.forEach((category) => categories.add(category));
-    sheetCategories.groups.forEach((group) => groups.add(group));
+    sheetCategories.categoryGroups.forEach((group) => groups.add(group));
 
     sheetAttributes.attributes.forEach((attribute) => attributes.add(attribute));
     sheetAttributes.periods.forEach((period) => periods.add(period));
@@ -114,13 +114,13 @@ export const extractDataElements = (
     workbookAttributeData[sheetName] = sheetAttributes.attributeData;
 
     for (let rowIndex in sheetCategories.categoryData) {
-      const { category, group } = sheetCategories.categoryData[rowIndex];
+      const { category, categoryGroup } = sheetCategories.categoryData[rowIndex];
 
       for (let columnIndex in sheetAttributes.attributeData) {
         const { attributeId, reportingPeriod } = sheetAttributes.attributeData[columnIndex];
-        const contentJSON = createJSONParams({
+        const contentJSON = createOrderedJSONParams({
           category,
-          group,
+          categoryGroup,
           attributeId,
           reportingPeriod,
         });
@@ -135,16 +135,30 @@ export const extractDataElements = (
     }
   }
 
+
+
   return {
     periods: Array.from(periods),
     categories: Array.from(categories),
-    groups: Array.from(groups),
+    categoryGroups: Array.from(groups),
     attributes: Array.from(attributes),
-    inputParams: Array.from(inputParams).map((inputParam) => JSON.parse(inputParam)
+    inputParams: Array.from(inputParams).map((inputParam) => JSON.parse(inputParam) as ISubmissionParam
     ),
-    prepopParams: Array.from(prepopParams).map((prepopParam) => JSON.parse(prepopParam)
+    prepopParams: Array.from(prepopParams).map((prepopParam) => JSON.parse(prepopParam) as ISubmissionParam
     ),
     workbookCategoryData,
     workbookAttributeData,
   };
 };
+
+export const createMasterValueQueryList = (
+  prepopulationParams: ISubmissionParam[],
+  orgId: string,
+  programId: string,
+): Partial<IMasterValue>[] => prepopulationParams.map(
+    (prepopulationParam) => ({
+      ...prepopulationParam,
+      orgId,
+      programId,
+    })
+  )

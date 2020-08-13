@@ -2,15 +2,29 @@
 
 import { extractDataElements } from "./parser/template";
 import uniqid from 'uniqid'
-import { ITemplate, ITemplatePackage, ISubmission, IProgram, IOrganization, ISubmissionData, IDataElements } from "./@types";
+import { ITemplate, ITemplatePackage, ISubmission, IProgram, IOrganization, ISubmissionData, IDataElements, IMasterValue, ISubmissionParam } from "./@types";
 import { IExcelState } from "redux-spreadsheet/src/@types/state";
 import { extractSubmissionData } from "./parser/submission";
 
-export const createJSONParams = ({
+export const createOrderedJSONParams = ({
   category,
-  group,
+  categoryGroup,
   attributeId,
-  reportingPeriod, }: any) => JSON.stringify({ category, group, attributeId, reportingPeriod });
+  reportingPeriod, }: ISubmissionParam) => JSON.stringify({ category, categoryGroup, attributeId, reportingPeriod });
+
+export const createOrderedParams = (
+  {
+    category,
+    categoryGroup,
+    attributeId,
+    reportingPeriod, }: ISubmissionParam
+): ISubmissionParam => (
+  {
+    category,
+    categoryGroup,
+    attributeId,
+    reportingPeriod, }
+)
 
 export const createTemplate = (
   workbook: any, 
@@ -92,3 +106,33 @@ export const createSubmissionData = (
     submissionData: extractSubmissionData(workbook, dataElements, inputReportingPeriods)
   }
 )
+
+export const createMasterValueFromSubmission = (
+  submissionData: ISubmissionData, 
+  submission: ISubmission
+): IMasterValue[] => {
+  return submissionData.submissionData.map(
+    (
+      {
+        attributeId,
+        reportingPeriod,
+        value,
+        category,
+        categoryGroup: group
+      }
+    ) => (
+        {
+          attributeId,
+          category,
+          categoryGroup: group,
+          orgId: submission.orgId,
+          programId: submission.programId,
+          reportingPeriod,
+          submissionId: submission._id,
+          templateId: submission.templateId,
+          // templateTypeId: submission.temp
+          value,
+        }
+      )
+  )
+}

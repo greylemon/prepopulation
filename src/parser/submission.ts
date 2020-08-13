@@ -1,5 +1,5 @@
 import { IExcelState } from 'redux-spreadsheet/src/@types/state';
-import { createJSONParams } from '../utils';
+import { createOrderedJSONParams } from '../utils';
 import { IDataElements } from "../@types";
 export const extractSubmissionData = (
   { sheetsMap, results }: IExcelState,
@@ -33,9 +33,9 @@ export const extractSubmissionData = (
           const relativeAttribute = attributeContent[columnIndex];
           const cell = row[+columnIndex];
 
-          const paramJSON = createJSONParams({
+          const paramJSON = createOrderedJSONParams({
             category: relativeCategory.category,
-            group: relativeCategory.group,
+            categoryGroup: relativeCategory.categoryGroup,
             attributeId: relativeAttribute.attributeId,
             reportingPeriod: relativeAttribute.reportingPeriod,
           });

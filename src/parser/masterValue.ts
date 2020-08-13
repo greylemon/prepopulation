@@ -1,12 +1,31 @@
-import { IMasterValue, ITemplate, ITemplatePackage, ISubmission, ISubmissionData } from "../@types"
+import { IMasterValue } from "../@types"
 
-export const extractMasterValues = (
-  submission: ISubmission,
-  submissionData: ISubmissionData
+export const getHistoricalData = (
+  masterValueQueryList: Partial<IMasterValue>[], 
+  masterValues: IMasterValue[]
 ): IMasterValue[] => {
-  const masterValues: IMasterValue[] = []
+  const prepopulationData: IMasterValue[] = []
 
-  // submission.
+  masterValueQueryList.forEach(
+    (query: any) => {
+      const keys = Object.keys(query)
+      masterValues.find(
+        (masterValue: any) => {
+          let isEqual = true
 
-  return masterValues
+          for (let key of keys) {
+            if (query[key] !== masterValue[key]) {
+              isEqual = false
+              break
+            }
+          }
+
+          if (isEqual)
+            prepopulationData.push(masterValue)
+        }
+      )
+    }
+  )
+
+  return prepopulationData
 }
