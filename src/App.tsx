@@ -15,7 +15,6 @@ import { templates, templatePackages } from './data/template'
 import { programs } from './data/program'
 import { organizations } from './data/organization'
 import { submissions, submissionDatas } from './data/submission'
-import { IMasterValue } from './@types'
 import { createMasterValueQueryList } from './parser/template'
 import { getHistoricalData } from './parser/masterValue'
 import { newbsJSON } from './workbooks/newbs'
@@ -23,6 +22,7 @@ import { oldbsJSON } from './workbooks/oldbs'
 import { generateWorkbook } from './parser/submission'
 import { Excel } from 'redux-spreadsheet'
 import 'redux-spreadsheet/dist/main.cjs.css'
+import { masterValues } from './data/masterValue'
 
 const App = () => {
   const mockProgram = createProgram("Health Program")
@@ -60,11 +60,12 @@ const App = () => {
 
 
   // SIMULATE POPULATION
-  // Find submission data
   const submission = mockSubmission
   const submissionData = submissionDatas.find((submissionData) => submissionData._id === submission.latestSubmissionDataId)!
 
-  const masterValues: IMasterValue[] = createMasterValueFromSubmission(submissionData, submission)
+  createMasterValueFromSubmission(submissionData, submission).forEach(
+    (e) => masterValues.push(e)
+  )
 
   // SIMULATE PREPOPULATION
   const newSubmission = createSubmission(
