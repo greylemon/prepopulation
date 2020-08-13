@@ -1,6 +1,7 @@
 import { IExcelState } from 'redux-spreadsheet/src/@types/state';
 import { createOrderedJSONParams } from '../utils';
-import { IDataElements } from "../@types";
+import { IDataElements, ITemplate } from "../@types";
+import cloneDeep from 'clone-deep';
 export const extractSubmissionData = (
   { sheetsMap, results }: IExcelState,
   dataElements: IDataElements,
@@ -67,3 +68,50 @@ export const extractSubmissionData = (
 
   return submissionData;
 };
+
+
+export const generateWorkbook = (mockNewTemplate: ITemplate, historicalDataSet: { [key: string]: string | number | null }): IExcelState => {
+  const { workbookAttributeData, workbookCategoryData } = mockNewTemplate.parameters
+
+  const sheetNames = Object.keys(workbookAttributeData)
+
+  const generatedWorkbook = cloneDeep(mockNewTemplate.workbook) as IExcelState
+  const sheetsMap = generatedWorkbook.sheetsMap
+
+  for (let sheetName of sheetNames) {
+    const sheetAttributeData = workbookAttributeData[sheetName]
+    const sheetCategoryData = workbookCategoryData[sheetName]
+
+    if (sheetAttributeData && sheetCategoryData) {
+      for (let rowIndex in sheetCategoryData) {
+        const categoryData = sheetCategoryData[rowIndex]
+        for (let columnIndex in sheetAttributeData) {
+          const attributeData = sheetAttributeData[columnIndex]
+
+          const params = createOrderedJSONParams({ ...categoryData, ...attributeData })
+
+          if (historicalDataSet[params] !== undefined) {
+            if (sheetsMap[sheetName]) {
+              const sheet = sheetsMap[sheetName].data
+
+              if (!sheet[+rowIndex])
+                sheet[+rowIndex] = {}
+
+              const value = historicalDataSet[params]
+
+              sheet[+rowIndex][+columnIndex] = {
+                type: typeof value,
+                value: value as string | number,
+                style: sheet[+rowIndex][+columnIndex] ? sheet[+rowIndex][+columnIndex].style : undefined
+              }
+
+              console.log(rowIndex, columnIndex)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return generatedWorkbook
+}

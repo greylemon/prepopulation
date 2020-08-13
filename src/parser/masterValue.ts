@@ -9,7 +9,7 @@ export const getHistoricalData = (
   masterValueQueryList.forEach(
     (query: any) => {
       const keys = Object.keys(query)
-      masterValues.find(
+      const result = masterValues.find(
         (masterValue: any) => {
           let isEqual = true
 
@@ -20,10 +20,12 @@ export const getHistoricalData = (
             }
           }
 
-          if (isEqual)
-            prepopulationData.push(masterValue)
+          return isEqual
         }
       )
+
+      if (result)
+        prepopulationData.push(result)
     }
   )
 

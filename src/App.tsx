@@ -1,7 +1,6 @@
 import React from 'react'
-import './App.css'
+// import './App.css'
 
-import { oldbsJSON, newbsJSON } from './data'
 import { 
   createProgram, 
   createOrganization, 
@@ -10,18 +9,20 @@ import {
   createTemplatePackage, 
   createSubmissionData, 
   createMasterValueFromSubmission, 
-  createOrderedParams,
   createOrderedJSONParams
 } from './utils'
 import { templates, templatePackages } from './data/template'
 import { programs } from './data/program'
 import { organizations } from './data/organization'
 import { submissions, submissionDatas } from './data/submission'
-import { IMasterValue, ISubmissionParam } from './@types'
+import { IMasterValue } from './@types'
 import { createMasterValueQueryList } from './parser/template'
 import { getHistoricalData } from './parser/masterValue'
-import cloneDeep from 'clone-deep'
-import { IExcelState } from 'redux-spreadsheet/src/@types/state'
+import { newbsJSON } from './workbooks/newbs'
+import { oldbsJSON } from './workbooks/oldbs'
+import { generateWorkbook } from './parser/submission'
+import { Excel } from 'redux-spreadsheet'
+import 'redux-spreadsheet/dist/main.cjs.css'
 
 const App = () => {
   const mockProgram = createProgram("Health Program")
@@ -44,7 +45,7 @@ const App = () => {
   const mockSubmissionData = createSubmissionData(
     mockSubmission._id, 
     mockOldTemplate.parameters, 
-    oldbsJSON as any, 
+    oldbsJSON, 
     mockOldTemplate.reportingPeriods
   )
 
@@ -93,54 +94,11 @@ const App = () => {
 
   // Create a JSON map for the workbook
   // const workbook
-  const { workbookAttributeData, workbookCategoryData } = mockNewTemplate.parameters
-
-  const sheetNames = Object.keys(workbookAttributeData)
-
-  const generatedWorkbook = cloneDeep(mockNewTemplate.workbook) as IExcelState
-  const sheetsMap = generatedWorkbook.sheetsMap
-
-  for (let sheetName of sheetNames) {
-    const sheetAttributeData = workbookAttributeData[sheetName]
-    const sheetCategoryData = workbookCategoryData[sheetName]
-
-    if (sheetAttributeData && sheetCategoryData) {
-      for (let rowIndex in sheetCategoryData) {
-        const categoryData = sheetCategoryData[rowIndex]
-        for (let columnIndex in sheetAttributeData) {
-          const attributeData = sheetAttributeData[columnIndex]
-
-          const params = createOrderedJSONParams({ ...categoryData, ...attributeData })
-
-          if (historicalDataSet[params] !== undefined) {
-            if (sheetsMap[sheetName]) {
-              const sheet = sheetsMap[sheetName].data
-
-              if (!sheet[+rowIndex]) sheet[+rowIndex] = {}
-
-              const value = historicalDataSet[params]
-
-              sheet[+rowIndex][+columnIndex] = {
-                type: typeof value,
-                value: value as string | number,
-                style: sheet[+rowIndex][+columnIndex] ? sheet[+rowIndex][+columnIndex].style : undefined
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  const generatedWorkbook = generateWorkbook(mockNewTemplate, historicalDataSet)
 
   return (
     <div className="App">
-      {/* {components} */}
-      {/* <Excel /> */}
-      {/* <p>SUBMISSION DATA</p>
-      {JSON.stringify(submissionData)} */}
-      {JSON.stringify(masterValues)}
-      <hr/>
-      {JSON.stringify(masterValueQueryList)}
+      <Excel initialState={generatedWorkbook} />
     </div>
   )
 }
