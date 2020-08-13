@@ -11,10 +11,10 @@ import {
   createMasterValueFromSubmission, 
   createOrderedJSONParams
 } from './utils'
-import { templates, templatePackages } from './data/template'
-import { programs } from './data/program'
-import { organizations } from './data/organization'
-import { submissions, submissionDatas } from './data/submission'
+import { templates, templatePackages } from './database/template'
+import { programs } from './database/program'
+import { organizations } from './database/organization'
+import { submissions, submissionDatas } from './database/submission'
 import { createMasterValueQueryList } from './parser/template'
 import { getHistoricalData } from './parser/masterValue'
 import { newbsJSON } from './workbooks/newbs'
@@ -22,7 +22,7 @@ import { oldbsJSON } from './workbooks/oldbs'
 import { generateWorkbook } from './parser/submission'
 import { Excel } from 'redux-spreadsheet'
 import 'redux-spreadsheet/dist/main.cjs.css'
-import { masterValues } from './data/masterValue'
+import { masterValues } from './database/masterValue'
 
 const App = () => {
   const mockProgram = createProgram("Health Program")
