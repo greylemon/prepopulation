@@ -2,7 +2,7 @@
 
 import { extractDataElements } from "./parser/template";
 import uniqid from 'uniqid'
-import { ITemplate, ITemplatePackage, ISubmission, IProgram, IOrganization, IMasterValue, ISubmissionData, IDataElements } from "./@types";
+import { ITemplate, ITemplatePackage, ISubmission, IProgram, IOrganization, ISubmissionData, IDataElements } from "./@types";
 import { IExcelState } from "redux-spreadsheet/src/@types/state";
 import { extractSubmissionData } from "./parser/submission";
 
@@ -77,32 +77,6 @@ export const createTemplatePackage = (
     name,
     programIds,
     templateIds
-  }
-)
-
-export const createMasterValue = (
-  attributeId: string,
-  category: string,
-  categoryGroup: string,
-  orgId: string,
-  programId: string,
-  reportingPeriodId: string,
-  submissionId: string,
-  templateId: string,
-  templateTypeId: string,
-  value: string,
-): IMasterValue => (
-  {
-    attributeId,
-    category,
-    categoryGroup,
-    orgId,
-    programId,
-    reportingPeriodId,
-    submissionId,
-    templateId,
-    templateTypeId,
-    value
   }
 )
 

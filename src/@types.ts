@@ -6,6 +6,15 @@ export type IAttribute = { attributeId: string; reportingPeriod: string; };
 export type IColumnToAttributeMap = { [key: string]: IAttribute; };
 export type IWorkbookCategoryMap = { [key: string]: IRowToCategoryMap; };
 export type IWorkbookAttributeMap = { [key: string]: IColumnToAttributeMap; };
+
+export type ISubmissionDataParams = {
+  reportingPeriod: string
+  group?: string
+  category?: string
+  attributeId: string
+  value: string
+}
+
 export type IDataElements = {
   periods: string[];
   categories: string[];
@@ -30,7 +39,7 @@ export type ISubmission = {
 export type ISubmissionData = {
   _id: string
   submissionId: string
-  submissionData: any[]
+  submissionData: ISubmissionDataParams[]
 }
 
 export type ITemplatePackage = {
@@ -65,11 +74,11 @@ export type ITemplate = {
 export type IMasterValue = {
   programId: string
   orgId: string
-  templateTypeId: string
+  // templateTypeId: string
   submissionId: string
-  reportingPeriodId: string
-  categoryGroup: string
-  category: string
+  reportingPeriod: string
+  categoryGroup?: string
+  category?: string
   attributeId: string
   templateId: string
   value: string | number | null
