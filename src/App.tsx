@@ -88,7 +88,6 @@ const App = () => {
   historicalData.forEach(
     (historical) => {
       historicalDataSet[createOrderedJSONParams(historical)] = historical.value
-      console.log(createOrderedJSONParams(historical))
     }
   )
 
@@ -113,21 +112,19 @@ const App = () => {
 
           const params = createOrderedJSONParams({ ...categoryData, ...attributeData })
 
-          // console.log(params)
-          if (historicalDataSet[params]) {
+          if (historicalDataSet[params] !== undefined) {
             if (sheetsMap[sheetName]) {
               const sheet = sheetsMap[sheetName].data
 
               if (!sheet[+rowIndex]) sheet[+rowIndex] = {}
-              if (!sheet[+rowIndex][+columnIndex]) sheet[+rowIndex][+columnIndex] = {}
 
               const value = historicalDataSet[params]
 
-              console.log('value', value)
-
-              const cell = sheet[+rowIndex][+columnIndex]
-
-              // cell.type = typ
+              sheet[+rowIndex][+columnIndex] = {
+                type: typeof value,
+                value: value as string | number,
+                style: sheet[+rowIndex][+columnIndex] ? sheet[+rowIndex][+columnIndex].style : undefined
+              }
             }
           }
         }
