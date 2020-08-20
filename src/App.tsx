@@ -19,7 +19,7 @@ import { createMasterValueQueryList } from './parser/template'
 import { getHistoricalData } from './parser/masterValue'
 import { newbsJSON } from './workbooks/newbs'
 import { oldbsJSON } from './workbooks/oldbs'
-import { generateWorkbook } from './parser/submission'
+import { generateSubmissionWorkbook } from './parser/submission'
 import { Excel } from 'redux-spreadsheet'
 import 'redux-spreadsheet/dist/main.cjs.css'
 import { masterValues } from './database/masterValue'
@@ -63,6 +63,7 @@ const App = () => {
   const submission = mockSubmission
   const submissionData = submissionDatas.find((submissionData) => submissionData._id === submission.latestSubmissionDataId)!
 
+  // Extract submission input values and put in master value table
   createMasterValueFromSubmission(submissionData, submission).forEach(
     (e) => masterValues.push(e)
   )
@@ -93,9 +94,8 @@ const App = () => {
     }
   )
 
-  // Create a JSON map for the workbook
-  // const workbook
-  const generatedWorkbook = generateWorkbook(mockNewTemplate, historicalDataSet)
+  // Create a new JSON Excel using template and historical data
+  const generatedWorkbook = generateSubmissionWorkbook(mockNewTemplate, historicalDataSet)
 
   return (
     <div className="App">

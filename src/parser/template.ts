@@ -2,10 +2,18 @@ import { IExcelState, IRows } from 'redux-spreadsheet/src/@types/state';
 import { IRowToCategoryMap, ICategory, IColumnToAttributeMap, IDataElements, IWorkbookCategoryMap, IWorkbookAttributeMap, ISubmissionParam, IMasterValue } from "../@types";
 import { createOrderedJSONParams } from "../utils";
 
+/**
+ * Loops through columns {groupColumnPosition} and {categoryColumnPosition} to extract category data elements
+ * Data elements include category and group
+ * 
+ * @param rows 
+ * @param groupColumnPosition 
+ * @param categoryColumnPosition 
+ */
 const extractCategories = (
   rows: IRows,
-  groupColumn: number,
-  categoryColumn: number
+  groupColumnPosition: number,
+  categoryColumnPosition: number
 ) => {
   const categoryData: IRowToCategoryMap = {};
   const categoryGroups: Set<string> = new Set();
@@ -15,8 +23,8 @@ const extractCategories = (
     const row = rows[rowIndex];
 
     const data: ICategory = {};
-    const groupCell = row[groupColumn];
-    const categoryCell = row[categoryColumn];
+    const groupCell = row[groupColumnPosition];
+    const categoryCell = row[categoryColumnPosition];
 
     if (groupCell && groupCell.value) {
       const categoryGroup = groupCell.value as string;
@@ -37,15 +45,23 @@ const extractCategories = (
   return { categoryData, categoryGroups, categories };
 };
 
+/**
+ * Loops through row {attributeRowLocation} to extracts attribute data elements
+ * Data elements include attribute and reporting period
+ * 
+ * @param rows 
+ * @param attributeRowLocation 
+ * @param inputReportingPeriods 
+ */
 const extractAttributes = (
   rows: IRows,
-  attributeColumn: number,
+  attributeRowLocation: number,
   inputReportingPeriods: Set<string>
 ) => {
   const attributeData: IColumnToAttributeMap = {};
   const attributes: Set<string> = new Set();
   const periods: Set<string> = new Set();
-  const firstRow = rows[attributeColumn] || {};
+  const firstRow = rows[attributeRowLocation] || {};
   const prepopAttributes: Set<string> = new Set();
   const inputAttributes: Set<string> = new Set();
 
@@ -77,6 +93,23 @@ const extractAttributes = (
   };
 };
 
+/**
+ * Extracts the following data elements from a template workbook:
+ * Reporting period
+ * Category
+ * Groups
+ * Attribute
+ * Input params
+ * Prepop params
+ * Workbook category: Mapping between position and category data elements (including group)
+ * Workbook attribute: Mapping between position and attribute data elements (including reporting period)
+ * 
+ * @param data 
+ * @param inputReportingPeriods 
+ * @param attributeColumn 
+ * @param groupColumn 
+ * @param categoryColumn 
+ */
 export const extractDataElements = (
   data: IExcelState,
   inputReportingPeriods: Set<string>,
@@ -135,8 +168,6 @@ export const extractDataElements = (
     }
   }
 
-
-
   return {
     periods: Array.from(periods),
     categories: Array.from(categories),
@@ -151,6 +182,12 @@ export const extractDataElements = (
   };
 };
 
+/**
+ * Combine additional parameters to complete master value query parameters
+ * @param prepopulationParams 
+ * @param orgId 
+ * @param programId 
+ */
 export const createMasterValueQueryList = (
   prepopulationParams: ISubmissionParam[],
   orgId: string,

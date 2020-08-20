@@ -1,5 +1,10 @@
 import { IMasterValue } from "../@types"
 
+/**
+ * Mocks MongoDB's find method
+ * @param masterValueQueryList 
+ * @param masterValues 
+ */
 export const getHistoricalData = (
   masterValueQueryList: Partial<IMasterValue>[], 
   masterValues: IMasterValue[]

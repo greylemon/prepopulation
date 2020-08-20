@@ -2,23 +2,33 @@ import { IExcelState } from 'redux-spreadsheet/src/@types/state';
 import { createOrderedJSONParams } from '../utils';
 import { IDataElements, ITemplate } from "../@types";
 import cloneDeep from 'clone-deep';
+import { extractDataElements } from './template';
+
+/**
+ * Extract cell values for the column matching the given input reporting periods
+ * @param param0 
+ * @param dataElements 
+ * @param inputReportingPeriods 
+ */
 export const extractSubmissionData = (
-  { sheetsMap, results }: IExcelState,
+  excelState: IExcelState,
   dataElements: IDataElements,
   inputReportingPeriods: Set<string>
 ) => {
   // Find column with current reporting period
+  const { sheetsMap, results } = excelState
   const submissionData = [];
 
   const {
     workbookAttributeData,
     workbookCategoryData,
-    inputParams, } = dataElements;
+   } = dataElements;
 
-  // create set out of input params
-  const inputParamsSet = new Set(
-    inputParams.map((inputParam) => JSON.stringify(inputParam))
-  );
+  const submissionDataElements = extractDataElements(excelState, inputReportingPeriods)
+
+  if (
+    JSON.stringify(submissionDataElements) !== JSON.stringify(dataElements)
+  ) throw new Error('Submission data elements do not match the data elements of its template')
 
   for (let sheetName in workbookCategoryData) {
     const categoryContent = workbookCategoryData[sheetName];
@@ -34,18 +44,9 @@ export const extractSubmissionData = (
           const relativeAttribute = attributeContent[columnIndex];
           const cell = row[+columnIndex];
 
-          const paramJSON = createOrderedJSONParams({
-            category: relativeCategory.category,
-            categoryGroup: relativeCategory.categoryGroup,
-            attributeId: relativeAttribute.attributeId,
-            reportingPeriod: relativeAttribute.reportingPeriod,
-          });
-
-          if (inputReportingPeriods.has(relativeAttribute.reportingPeriod) &&
-            inputParamsSet.has(paramJSON) &&
-            cell) {
+          if (inputReportingPeriods.has(relativeAttribute.reportingPeriod) && cell) {
             let value = '';
-            // ! CONSIDER OTHER TYPES
+            // TODO : CONSIDER OTHER TYPES
             switch (cell.type) {
               case 'formula':
                 value = results[sheetName][rowIndex][columnIndex].toString();
@@ -69,8 +70,13 @@ export const extractSubmissionData = (
   return submissionData;
 };
 
-
-export const generateWorkbook = (mockNewTemplate: ITemplate, historicalDataSet: { [key: string]: string | number | null }): IExcelState => {
+/**
+ * Generates a new submission workbook by combining the template workbook and historical values
+ * 
+ * @param mockNewTemplate 
+ * @param historicalDataSet 
+ */
+export const generateSubmissionWorkbook = (mockNewTemplate: ITemplate, historicalDataSet: { [key: string]: string | number | null }): IExcelState => {
   const { workbookAttributeData, workbookCategoryData } = mockNewTemplate.parameters
 
   const sheetNames = Object.keys(workbookAttributeData)
@@ -104,8 +110,6 @@ export const generateWorkbook = (mockNewTemplate: ITemplate, historicalDataSet: 
                 value: value as string | number,
                 style: sheet[+rowIndex][+columnIndex] ? sheet[+rowIndex][+columnIndex].style : undefined
               }
-
-              console.log(rowIndex, columnIndex)
             }
           }
         }
