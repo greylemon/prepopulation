@@ -2029,6 +2029,9 @@ export const oldbsJSON: IExcelState = {
       "inactiveSelectionAreas": []
     }
   },
+  "topLeftPosition": {
+    "x": 1, "y": 1
+  },
   "results": {
     "Balance Sheet": {
       "11": { "5": 0, "6": 0, "7": 0, "8": 6112 },
@@ -2038,7 +2041,6 @@ export const oldbsJSON: IExcelState = {
   },
   "sheetNameText": "",
   "scrollOffset": { "x": 0, "y": 0 },
-  "sheetDimensions": { "x": 0, "y": 0 },
   "dependentReferences": {
     "Balance Sheet": {
       "11": {

@@ -104,8 +104,6 @@ export const generateWorkbook = (mockNewTemplate: ITemplate, historicalDataSet: 
                 value: value as string | number,
                 style: sheet[+rowIndex][+columnIndex] ? sheet[+rowIndex][+columnIndex].style : undefined
               }
-
-              console.log(rowIndex, columnIndex)
             }
           }
         }

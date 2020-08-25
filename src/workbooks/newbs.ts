@@ -2044,9 +2044,11 @@ export const newbsJSON: IExcelState = {
       "15": { "5": 0, "6": 0, "7": 0, "8": 0 }
     }
   },
+  "topLeftPosition": {
+    "x": 1, "y": 1
+  },
   "sheetNameText": "",
   "scrollOffset": { "x": 0, "y": 0 },
-  "sheetDimensions": { "x": 0, "y": 0 },
   "dependentReferences": {
     "Balance Sheet": {
       "11": {
