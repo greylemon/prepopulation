@@ -1,64 +1,36 @@
-import React, { useEffect } from 'react'
-import { Provider, useDispatch } from 'react-redux'
-import { undox } from 'undox'
-
-import { 
-  createSampleSubmission
-} from './utils'
-import { Excel, createActionIgnoreMap, devTools, createDefaultReducers } from 'redux-spreadsheet'
+import React, { useState, useCallback } from 'react'
+import { Provider } from 'react-redux'
+import { Excel } from 'redux-spreadsheet'
+import { TemplateOptionsAttributes } from './Attributes'
+import { customStore } from './customStore'
+import { TemplateOptionsCategory } from './Categories'
 import 'redux-spreadsheet/dist/main.cjs.css'
-import { IExcelState } from 'redux-spreadsheet/src/@types'
-import { configureStore, createSlice } from '@reduxjs/toolkit'
-import thunk from 'redux-thunk'
-
-const SET_CATEGORY = (state: IExcelState) => {
-  // state.sheetsMap['Balance Sheet'] = {}
-  // console.log(JSON.stringify(state.sheetsMap))
-  return state
-}
-
-const ExcelStore = createSlice(
-  { 
-    initialState: createSampleSubmission(),
-    name: "EXCEL",
-    reducers: {
-      ...createDefaultReducers(),
-      SET_CATEGORY
-    }
-  }
-)
-
-const ExcelStoreActions = ExcelStore.actions as any
-
-const UndoxExcelStore = undox(
-  ExcelStore.reducer,
-  undefined,
-  undefined,
-  { ...createActionIgnoreMap(), [ExcelStoreActions.SET_CATEGORY.type]: true }
-)
-
-const customStore = configureStore(
-  {
-    reducer: UndoxExcelStore,
-    devTools,
-    middleware: [thunk]
-  }
-)
+import './App.css'
+import { Tabs, Tab } from '@material-ui/core'
+import { a11yProps, TabPanel } from './TabPanel'
 
 const TemplateOptions = () => {
-  const dispatch = useDispatch()
+  const [tabValue, setTabValue] = useState(0)
 
-  useEffect(
-    () => {
-      dispatch(ExcelStoreActions.SET_CATEGORY())
+  const handleChangeTab = useCallback(
+    (_, newValue) => {
+      setTabValue(newValue)
     },
-    [dispatch]
+    [setTabValue]
   )
-
   
   return (
-    <div>
-
+    <div style={{ display: "flex", flexFlow: "column", width: 500, padding: 10 }}>
+      <Tabs value={tabValue} onChange={handleChangeTab} aria-label="simple tabs example" centered>
+        <Tab label="Category" {...a11yProps(0)} />
+        <Tab label="Attribute" {...a11yProps(1)} />
+      </Tabs>
+      <TabPanel value={tabValue} index={0}>
+        <TemplateOptionsCategory/>
+      </TabPanel>
+      <TabPanel value={tabValue} index={1}>
+        <TemplateOptionsAttributes/>
+      </TabPanel>
     </div>
   )
 }
@@ -76,7 +48,7 @@ const App = () => {
   return (
     <div className="App">
       <TemplateOptionsContainer/>
-      <Excel customStore={customStore} />
+      <Excel style={{ width: '100%' }} customStore={customStore} />
     </div>
   )
 }
