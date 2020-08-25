@@ -4,7 +4,7 @@ import { extractDataElements, createMasterValueQueryList } from "./parser/templa
 import uniqid from 'uniqid'
 import { ITemplate, ITemplatePackage, ISubmission, IProgram, IOrganization, ISubmissionData, IDataElements, IMasterValue, ISubmissionParam } from "./@types";
 import { IExcelState } from "redux-spreadsheet/src/@types/state";
-import { extractSubmissionData, generateWorkbook } from "./parser/submission";
+import { extractSubmissionData, generateSubmissionWorkbook } from "./parser/submission";
 import { oldbsJSON } from "./workbooks/oldbs";
 import { newbsJSON } from "./workbooks/newbs";
 import { programs } from "./database/program";
@@ -218,7 +218,7 @@ export const createSampleSubmission = () => {
 
   // Create a JSON map for the workbook
   // const workbook
-  const generatedWorkbook = generateWorkbook(mockNewTemplate, historicalDataSet)
+  const generatedWorkbook = generateSubmissionWorkbook(mockNewTemplate, historicalDataSet)
 
   const updatedWorkbook = updateWorkbookReference(generatedWorkbook)
   return updatedWorkbook
