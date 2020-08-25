@@ -15,20 +15,22 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
   const {
     categoryColumn,
     categoryGroupColumn,
+    categoryHeaderColumn,
     categories,
-    categoryGroup, } = action.payload;
+    categoryGroup, 
+  } = action.payload;
 
   if (!data[activeCellPosition.y])
     data[activeCellPosition.y] = {};
 
   if (categoryGroup) {
-    if (!data[activeCellPosition.y][categoryColumn])
-      data[activeCellPosition.y][categoryColumn] = {};
-  
-    data[activeCellPosition.y][categoryColumn] = {
+    if (!data[activeCellPosition.y][categoryHeaderColumn])
+      data[activeCellPosition.y][categoryHeaderColumn] = {}
+
+    data[activeCellPosition.y][categoryHeaderColumn] = {
       type: 'text',
       value: categoryGroup.categoryGroupId.name,
-      style: data[activeCellPosition.y][categoryColumn].style
+      style: data[activeCellPosition.y][categoryHeaderColumn].style
     };
   }
 
@@ -39,6 +41,8 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
 
     if (!data[row][categoryColumn])
       data[row][categoryColumn] = {};
+
+    if (!data[row][categoryHeaderColumn]) data[row][categoryHeaderColumn] = {}
 
     if (categoryGroup) {
       if (!data[row][categoryGroupColumn])
@@ -57,6 +61,12 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
       value: categories[i].id,
       style: data[row][categoryColumn].style
     };
+
+    data[row][categoryHeaderColumn] = {
+      type: 'text',
+      value: categories[i].name,
+      style: data[row][categoryHeaderColumn].style
+    };
   }
 
   return state;
@@ -66,7 +76,8 @@ const SET_ATTRIBUTE = (state: IExcelState, action: PayloadAction<any>): IExcelSt
   const {
     attributeRow,
     attribute,
-    reportingPeriod
+    reportingPeriod,
+    attributeHeaderRow
   } = action.payload;
 
   const data = nSelectActiveSheetData(state);
@@ -77,11 +88,20 @@ const SET_ATTRIBUTE = (state: IExcelState, action: PayloadAction<any>): IExcelSt
   if (!data[attributeRow][activeCellPosition.x])
     data[attributeRow][activeCellPosition.x] = {}
 
-    data[attributeRow][activeCellPosition.x] = {
-      type: 'text',
-      value: `${attribute.id}|${reportingPeriod.name}`,
-      style: data[attributeRow][activeCellPosition.x].style
-    }
+  data[attributeRow][activeCellPosition.x] = {
+    type: 'text',
+    value: `${attribute.id}|${reportingPeriod.name}`,
+    style: data[attributeRow][activeCellPosition.x].style
+  }
+
+  if (!data[attributeHeaderRow]) data[attributeHeaderRow] = {}
+  if (!data[attributeHeaderRow][activeCellPosition.x]) data[attributeHeaderRow][activeCellPosition.x] = {}
+
+  data[attributeHeaderRow][activeCellPosition.x] = {
+    type: 'text',
+    value: `${reportingPeriod.name} ${attribute.name}`,
+    style: data[attributeHeaderRow][activeCellPosition.x].style
+  }
 
   return state;
 };

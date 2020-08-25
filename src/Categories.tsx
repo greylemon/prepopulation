@@ -170,16 +170,23 @@ export const TemplateOptionsCategory = () => {
   const [currentCategories, setCurrentCategories] = useState([])
   const [categoryColumn, setCategoryColumn] = useState(2)
   const [categoryGroupColumn, setCategoryGroupColumn] = useState(1)
+  const [categoryHeaderColumn, setCategoryHeaderColumn] = useState(4)
   const [tabValue, setTabValue] = useState(0)
 
   useEffect(
     () => {
       const fetchedCategoryColumn = 2
       const fetchedCategoryGroupColumn = 1
+      const fetchedCategoryHeaderColumn = 4
       setCategoryColumn(fetchedCategoryColumn)
       setCategoryGroupColumn(fetchedCategoryGroupColumn)
+      setCategoryHeaderColumn(fetchedCategoryHeaderColumn)
     },
-    []
+    [
+      setCategoryColumn,
+      setCategoryGroupColumn,
+      setCategoryHeaderColumn,
+    ]
   )
 
   useEffect(
@@ -207,6 +214,7 @@ export const TemplateOptionsCategory = () => {
             categoryGroupColumn,
             categories: currentCategories,
             categoryGroup: nodeChain[nodeChain.length - 1],
+            categoryHeaderColumn,
           }
         ))
       }     
@@ -216,6 +224,7 @@ export const TemplateOptionsCategory = () => {
       categoryColumn,
       categoryGroupColumn,
       currentCategories,
+      categoryHeaderColumn,
       nodeChain,
     ]
   )

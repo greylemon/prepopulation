@@ -48,6 +48,7 @@ export const TemplateOptionsAttributes = () => {
   const [selectedReportingPeriod, setSelectedReportingPeriod] = useState()
   const [tabValue, setTabValue] = useState(0)
   const [attributeRow, setAttributeRow] = useState(1)
+  const [attributeHeaderRow, setAttributeHeaderRow] = useState(3)
 
   const handleChangeTab = useCallback(
     (_, newValue) => {
@@ -62,13 +63,15 @@ export const TemplateOptionsAttributes = () => {
         {
           attributeRow,
           reportingPeriod: selectedReportingPeriod,
-          attribute: selectedAttribute
+          attribute: selectedAttribute,
+          attributeHeaderRow
         }
       ))
     },
     [
       dispatch,
       attributeRow,
+      attributeHeaderRow,
       selectedAttribute,
       selectedReportingPeriod,
     ]
@@ -109,11 +112,18 @@ export const TemplateOptionsAttributes = () => {
   useEffect(
     () => {
       const fetchedAttributeRow = 1
+      const fetchedAttributeHeaderRow = 3
       setAttributes(sampleAttributes)
       setReportingPeriods(sampleReportingPeriods)
       setAttributeRow(fetchedAttributeRow)
+      setAttributeHeaderRow(fetchedAttributeHeaderRow)
     },
-    [setAttributes, setReportingPeriods, setAttributeRow]
+    [
+      setAttributes, 
+      setReportingPeriods, 
+      setAttributeRow, 
+      setAttributeHeaderRow
+    ]
   )
 
   return (
