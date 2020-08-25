@@ -6,7 +6,7 @@ import { customStore } from './customStore'
 import { TemplateOptionsCategory } from './Categories'
 import 'redux-spreadsheet/dist/main.cjs.css'
 import './App.css'
-import { Tabs, Tab } from '@material-ui/core'
+import { Tabs, Tab, Paper } from '@material-ui/core'
 import { a11yProps, TabPanel } from './TabPanel'
 
 const TemplateOptions = () => {
@@ -20,7 +20,7 @@ const TemplateOptions = () => {
   )
   
   return (
-    <div style={{ display: "flex", flexFlow: "column", width: 500, padding: 10 }}>
+    <Paper style={{ display: "flex", flexFlow: "column", width: 500, maxWidth: 500, overflow: "auto", padding: 10 }}>
       <Tabs value={tabValue} onChange={handleChangeTab} aria-label="simple tabs example" centered>
         <Tab label="Category" {...a11yProps(0)} />
         <Tab label="Attribute" {...a11yProps(1)} />
@@ -31,7 +31,7 @@ const TemplateOptions = () => {
       <TabPanel value={tabValue} index={1}>
         <TemplateOptionsAttributes/>
       </TabPanel>
-    </div>
+    </Paper>
   )
 }
 

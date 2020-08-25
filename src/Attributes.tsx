@@ -1,44 +1,11 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import { sampleAttributes } from "./sample/attribute"
 import { Tab, Tabs, Chip, Tooltip, Paper } from "@material-ui/core"
-import MaterialTable from "material-table"
 import { a11yProps, TabPanel } from "./TabPanel";
 import { sampleReportingPeriods } from "./sample/reportingPeriod";
-import { CustomButton } from "./Components";
+import { CustomButton, CommonTable } from "./Components";
 import { ExcelStoreActions } from "./customStore";
 import { useDispatch } from "react-redux";
-
-const CommonTable = ({ data, handleClickRow }) => {
-
-  const columns = useMemo(
-    () => [
-      // { title: "id", field: "id" },
-      { title: "Name", field: "name" },
-    ],
-    []
-  )
-
-  const actions = useMemo(
-    () => [
-      {
-        icon: 'save',
-        tooltip: 'Apply',
-        onClick: handleClickRow
-      }
-    ],
-    [handleClickRow]
-  )
-
-  const options = useMemo(() => ({ actionsColumnIndex: -1, showTitle: false }), []);
-  return (
-    <MaterialTable 
-      columns={columns} 
-      data={data} 
-      actions={actions} 
-      options={options}
-    />
-  )
-}
 
 const Labels = (
   {
@@ -52,8 +19,7 @@ const Labels = (
     display: "flex", 
     flexFlow: "column", 
     justifyContent: "center", 
-    minHeight: "fit-content", 
-    height: 50, 
+    minHeight: 50, 
     width: '100%',
     margin: '10px 0',
   }}>

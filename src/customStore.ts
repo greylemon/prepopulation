@@ -6,8 +6,7 @@ import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 
 // Use require to avoid need for types!
-const {
-  nSelectActiveSheetData, } = require('redux-spreadsheet') as any;
+const { nSelectActiveSheetData, } = require('redux-spreadsheet') as any;
 
 const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelState => {
   const data = nSelectActiveSheetData(state);
@@ -21,14 +20,17 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
 
   if (!data[activeCellPosition.y])
     data[activeCellPosition.y] = {};
-  if (!data[activeCellPosition.y][categoryColumn])
-    data[activeCellPosition.y][categoryColumn] = {};
 
-  data[activeCellPosition.y][categoryColumn] = {
-    type: 'text',
-    value: categoryGroup.categoryGroupId.name,
-    style: data[activeCellPosition.y][categoryColumn].style
-  };
+  if (categoryGroup) {
+    if (!data[activeCellPosition.y][categoryColumn])
+      data[activeCellPosition.y][categoryColumn] = {};
+  
+    data[activeCellPosition.y][categoryColumn] = {
+      type: 'text',
+      value: categoryGroup.categoryGroupId.name,
+      style: data[activeCellPosition.y][categoryColumn].style
+    };
+  }
 
   for (let i = 0; i < categories.length; i++) {
     const row = i + activeCellPosition.y + 1;
@@ -37,19 +39,23 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
 
     if (!data[row][categoryColumn])
       data[row][categoryColumn] = {};
-    if (!data[row][categoryGroupColumn])
-      data[row][categoryGroupColumn] = {};
+
+    if (categoryGroup) {
+      if (!data[row][categoryGroupColumn])
+        data[row][categoryGroupColumn] = {};
+
+        
+      data[row][categoryGroupColumn] = {
+        type: 'text',
+        value: categoryGroup._id,
+        style: data[row][categoryGroupColumn].style
+      };
+    }
 
     data[row][categoryColumn] = {
       type: 'text',
       value: categories[i].id,
       style: data[row][categoryColumn].style
-    };
-
-    data[row][categoryGroupColumn] = {
-      type: 'text',
-      value: categoryGroup._id,
-      style: data[row][categoryGroupColumn].style
     };
   }
 
