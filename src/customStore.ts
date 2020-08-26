@@ -23,6 +23,8 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
   if (!data[activeCellPosition.y])
     data[activeCellPosition.y] = {};
 
+  let rowOffset = 0
+
   if (categoryGroup) {
     if (!data[activeCellPosition.y][categoryHeaderColumn])
       data[activeCellPosition.y][categoryHeaderColumn] = {}
@@ -32,10 +34,12 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
       value: categoryGroup.categoryGroupId.name,
       style: data[activeCellPosition.y][categoryHeaderColumn].style
     };
+    
+    rowOffset = 1
   }
 
   for (let i = 0; i < categories.length; i++) {
-    const row = i + activeCellPosition.y + 1;
+    const row = i + activeCellPosition.y + rowOffset;
     if (!data[row])
       data[row] = {};
 
