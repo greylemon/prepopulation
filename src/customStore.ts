@@ -17,25 +17,51 @@ const SET_CATEGORY = (state: IExcelState, action: PayloadAction<any>): IExcelSta
     categoryGroupColumn,
     categoryHeaderColumn,
     categories,
-    categoryGroup, 
+    categoryGroups, 
+    categoryGroupBehaviour
   } = action.payload;
 
   if (!data[activeCellPosition.y])
     data[activeCellPosition.y] = {};
 
-  let rowOffset = 0
-
-  if (categoryGroup) {
-    if (!data[activeCellPosition.y][categoryHeaderColumn])
-      data[activeCellPosition.y][categoryHeaderColumn] = {}
-
-    data[activeCellPosition.y][categoryHeaderColumn] = {
-      type: 'text',
-      value: categoryGroup.categoryGroupId.name,
-      style: data[activeCellPosition.y][categoryHeaderColumn].style
-    };
     
-    rowOffset = 1
+  let rowOffset = 0
+  const categoryGroup = categoryGroups[categoryGroups.length - 1]
+
+  switch (categoryGroupBehaviour) {
+    case 'current': 
+      if (categoryGroup) {
+        if (!data[activeCellPosition.y][categoryHeaderColumn])
+          data[activeCellPosition.y][categoryHeaderColumn] = {}
+    
+        data[activeCellPosition.y][categoryHeaderColumn] = {
+          type: 'text',
+          value: categoryGroup.categoryGroupId.name,
+          style: data[activeCellPosition.y][categoryHeaderColumn].style
+        };
+        
+        rowOffset = 1
+      }
+      break
+    case 'all':
+      for (let i = 0; i < categoryGroups.length; i++) {
+        if (!data[activeCellPosition.y + i])
+          data[activeCellPosition.y + i] = {};
+        if (!data[activeCellPosition.y + i][categoryHeaderColumn])
+          data[activeCellPosition.y + i][categoryHeaderColumn] = {}
+    
+        data[activeCellPosition.y + i][categoryHeaderColumn] = {
+          type: 'text',
+          value: categoryGroups[i].categoryGroupId.name,
+          style: data[activeCellPosition.y + i][categoryHeaderColumn].style
+        }
+      }
+
+      rowOffset = categoryGroups.length
+      break
+    case 'none':
+    default:
+      break
   }
 
   for (let i = 0; i < categories.length; i++) {

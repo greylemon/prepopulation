@@ -1,26 +1,27 @@
 import { useDispatch } from "react-redux"
-import { useState, useCallback, useEffect, useMemo, FunctionComponent, useRef } from "react"
+import { useState, useCallback, useEffect, useMemo, FunctionComponent, useRef, CSSProperties } from "react"
 import { sampleCategories, sampleCategoryGroups, sampleCategoryTrees } from "./sample/category"
 import { ExcelStoreActions } from "./customStore"
 import React from "react"
 import { CustomButton } from "./Components"
-import { withStyles, emphasize, Chip, Breadcrumbs, Paper, Tabs, Tab } from "@material-ui/core"
+import { withStyles, emphasize, Chip, Breadcrumbs, Paper, Tabs, Tab, Tooltip } from "@material-ui/core"
 import MaterialTable from "material-table"
 import { NavigateNext } from "@material-ui/icons"
 import { a11yProps, TabPanel } from "./TabPanel"
+import Select from 'react-select'
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.grey[100],
+    backgroundColor: theme.palette.primary.main,
     height: theme.spacing(3),
-    color: theme.palette.grey[800],
+    color: 'white',
     fontWeight: theme.typography.fontWeightRegular,
     '&:hover, &:focus': {
-      backgroundColor: theme.palette.grey[300],
+      backgroundColor: theme.palette.primary.dark,
     },
     '&:active': {
       boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(theme.palette.grey[300], 0.12),
+      backgroundColor: emphasize(theme.palette.primary.dark, 0.12),
     },
   },
 }))(Chip)
@@ -144,16 +145,15 @@ const NodeDisplay = (
         <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
           {
             nodeChain.map(
-              (node: any, index: number) => {
-
-                return(
+              (node: any, index: number) => (
+                <Tooltip title="Remove node">
                   <StyledBreadcrumb 
                     key={`chain_${node._id}`} 
                     label={node.categoryGroupId.name} 
                     onClick={() => handleClickChainNode(index)} 
                   />
-                )
-              }
+                </Tooltip>
+              )
             )
           }
         </Breadcrumbs>
@@ -172,6 +172,7 @@ export const TemplateOptionsCategory = () => {
   const [categoryGroupColumn, setCategoryGroupColumn] = useState(1)
   const [categoryHeaderColumn, setCategoryHeaderColumn] = useState(4)
   const [tabValue, setTabValue] = useState(0)
+  const [categoryGroupBehaviour, setCategoryGroupBehaviour] = useState('all')
 
   useEffect(
     () => {
@@ -213,8 +214,9 @@ export const TemplateOptionsCategory = () => {
             categoryColumn,
             categoryGroupColumn,
             categories: currentCategories,
-            categoryGroup: nodeChain[nodeChain.length - 1],
+            categoryGroups: nodeChain,
             categoryHeaderColumn,
+            categoryGroupBehaviour,
           }
         ))
       }     
@@ -226,6 +228,7 @@ export const TemplateOptionsCategory = () => {
       currentCategories,
       categoryHeaderColumn,
       nodeChain,
+      categoryGroupBehaviour,
     ]
   )
 
@@ -274,6 +277,22 @@ export const TemplateOptionsCategory = () => {
     [setCurrentCategories]
   )
 
+  const options = useMemo(
+    () => [
+      { value: 'none', label: 'None' },
+      { value: 'current', label: 'Current' },
+      { value: 'all', label: 'All' },
+    ],
+    []
+  )
+
+  const handleOptionChange = useCallback(
+    (option) => {
+      setCategoryGroupBehaviour(option.value)
+    },
+    [setCategoryGroupBehaviour]
+  )
+
   return (
     <div>
       <NodeDisplay
@@ -284,6 +303,17 @@ export const TemplateOptionsCategory = () => {
         <Tab label="Tree" {...a11yProps(0)} />
         <Tab label="Category" {...a11yProps(1)} />
       </Tabs>
+      <div style={{ marginBottom: 10 }}>
+        <Chip style={{ marginBottom: 5, borderRadius: 2 }} label="Group Display Behaviour" color="primary" />
+        <Select 
+          placeholder="Select group behaviour"
+          styles={{ menuPortal: (base: CSSProperties) => ({ ...base, zIndex: 9999 }) }}
+          menuPortalTarget={document.body}
+          options={options} 
+          defaultValue={options[1]} 
+          onChange={handleOptionChange}
+        />
+      </div>
       <TabPanel value={tabValue} index={0}>
         <CustomCommonTable data={categoryNodes} handleClickRow={handleSelectNode} />
       </TabPanel>
