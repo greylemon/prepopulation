@@ -299,10 +299,6 @@ export const TemplateOptionsCategory = () => {
         nodeChain={nodeChain}
         handleClickChainNode={handleClickChainNode}
       />
-      <Tabs style={{ marginBottom: 10 }} value={tabValue} onChange={handleChangeTab} aria-label="simple tabs example" centered>
-        <Tab label="Tree" {...a11yProps(0)} />
-        <Tab label="Category" {...a11yProps(1)} />
-      </Tabs>
       <div style={{ marginBottom: 10 }}>
         <Chip style={{ marginBottom: 5, borderRadius: 2 }} label="Group Display Behaviour" color="primary" />
         <Select 
@@ -314,6 +310,11 @@ export const TemplateOptionsCategory = () => {
           onChange={handleOptionChange}
         />
       </div>
+      <Tabs style={{ marginBottom: 10 }} value={tabValue} onChange={handleChangeTab} aria-label="simple tabs example" centered>
+        <Tab label="Tree" {...a11yProps(0)} />
+        <Tab label="Category" {...a11yProps(1)} />
+      </Tabs>
+
       <TabPanel value={tabValue} index={0}>
         <CustomCommonTable data={categoryNodes} handleClickRow={handleSelectNode} />
       </TabPanel>
