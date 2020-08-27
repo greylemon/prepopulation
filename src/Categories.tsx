@@ -172,7 +172,7 @@ export const TemplateOptionsCategory = () => {
   const [categoryGroupColumn, setCategoryGroupColumn] = useState(1)
   const [categoryHeaderColumn, setCategoryHeaderColumn] = useState(4)
   const [tabValue, setTabValue] = useState(0)
-  const [categoryGroupBehaviour, setCategoryGroupBehaviour] = useState('all')
+  const [categoryGroupBehaviour, setCategoryGroupBehaviour] = useState('current')
 
   useEffect(
     () => {
